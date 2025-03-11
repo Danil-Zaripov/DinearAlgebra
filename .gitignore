@@ -409,3 +409,5 @@ Tables/
 *.png
 *.jpeg
 *.jpg
+
+src/DinearAlgebra/nuget.config
