@@ -6,19 +6,6 @@ open Trees
 open FsCheck.FSharp
 
 
-module Utility =
-    let multiply opMult opAdd genericZero mat1 mat2 =
-        let n, k = Array2D.getDims mat1
-        let k, m = Array2D.getDims mat2
-        let mat = Array2D.create n m genericZero
-
-        for i in 0 .. n - 1 do
-            for j in 0 .. m - 1 do
-                for k in 0 .. k - 1 do
-                    mat[i, j] <- opAdd mat[i, j] (opMult mat1[i, k] mat2[k, j])
-
-        mat
-
 [<Properties(MaxTest = 100)>]
 module PropertyTests =
     let (.=.) left right =
@@ -212,5 +199,47 @@ module SparseMatrixTests =
         let actual = (QuadTree.multiply (&&) (||) false tr1 tr2) |> QuadTree.toMatrix
 
         let expected = Utility.multiply (&&) (||) false mat1 mat2
+
+        expected = actual
+
+    type AdjacencyMatrix =
+        static member AdjacencyMatrix() =
+            let adjacencyMatrixGenerator =
+                gen {
+                    let! n = Gen.choose (2, 5)
+
+                    let getMatrix n =
+                        gen {
+                            let mat = Array2D.init n n (fun x y -> x = y)
+                            let elems = n * n
+                            let! nonBaseElems = Gen.choose (0, elems / 100 + elems % 100)
+
+                            for _ in 1..nonBaseElems do
+                                let! x = Gen.choose (0, n - 1)
+                                let! y = Gen.choose (0, n - 1)
+                                mat[x, y] <- true
+
+                            return mat
+                        }
+
+                    let! mat = getMatrix n 
+                    return mat
+                }
+
+            Arb.fromGen (adjacencyMatrixGenerator)
+
+    [<Property(Arbitrary = [| typeof<AdjacencyMatrix> |])>]
+    let doubleMultiplicationBool (mat: bool array2d) =
+        let tr = QuadTree.ofMatrix mat
+
+        let expected = 
+            let first = Utility.multiply (&&) (||) false mat mat
+            Utility.multiply (&&) (||) false first mat
+        
+        let actual = 
+            let first = QuadTree.multiply (&&) (||) false tr tr
+            QuadTree.multiply (&&) (||) false first tr
+
+        let actual = QuadTree.toMatrix actual
 
         expected = actual

@@ -95,3 +95,24 @@ module UnitTests =
         let actual = QuadTree.multiply (*) (+) 0 tr1 tr2 |> QuadTree.toMatrix
 
         Assert.Equal(expected, actual)
+
+    [<Fact>]
+    let checkDoubleProduct() =
+        let mat = Array2D.init 5 5 (fun x y -> x = y)
+        mat[3,4] <- true
+
+
+        let tr = QuadTree.ofMatrix mat
+
+        let expected = 
+            let first = Utility.multiply (&&) (||) false mat mat
+            Utility.multiply (&&) (||) false first mat
+        
+        let actual = 
+            let first = QuadTree.multiply (&&) (||) false tr tr
+            QuadTree.multiply (&&) (||) false first tr
+
+        let actual = QuadTree.toMatrix actual
+
+        Assert.Equal(expected, actual)
+
