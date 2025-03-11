@@ -54,10 +54,7 @@ module PropertyTests =
             isOk
         | None -> true
 
-    let getRandomArray2D n m =
-        let rand = System.Random()
-        let mat = Array2D.map (fun _ -> rand.Next(-1000, 1000)) (Array2D.zeroCreate n m)
-        mat
+
 
 
     [<Property>]
@@ -65,7 +62,7 @@ module PropertyTests =
         let n, m = Array2D.getDims mat1
 
         let tst () =
-            let mat2 = getRandomArray2D n m
+            let mat2 = Utility.getRandomArray2D n m
             let tr1 = mat1 |> QuadTree.ofMatrix
             let tr2 = mat2 |> QuadTree.ofMatrix
 
@@ -83,7 +80,7 @@ module PropertyTests =
 
         let tst () =
             let d = (System.Random().Next(1, 200))
-            let mat2 = getRandomArray2D m d
+            let mat2 = Utility.getRandomArray2D m d
             let tr1 = mat1 |> QuadTree.ofMatrix
             let tr2 = mat2 |> QuadTree.ofMatrix
 
@@ -101,7 +98,7 @@ module PropertyTests =
 
         let tst () =
             let d = (System.Random().Next(1, 200))
-            let mat2 = getRandomArray2D m d |> Array2D.map bigint
+            let mat2 = Utility.getRandomArray2D m d |> Array2D.map bigint
             let tr1 = mat1 |> QuadTree.ofMatrix
             let tr2 = mat2 |> QuadTree.ofMatrix
 
@@ -202,6 +199,9 @@ module SparseMatrixTests =
 
         expected = actual
 
+
+module DoubleMultiplication = 
+    
     type AdjacencyMatrix =
         static member AdjacencyMatrix() =
             let adjacencyMatrixGenerator =
@@ -239,6 +239,30 @@ module SparseMatrixTests =
         let actual = 
             let first = QuadTree.multiply (&&) (||) false tr tr
             QuadTree.multiply (&&) (||) false first tr
+
+        let actual = QuadTree.toMatrix actual
+
+        expected = actual
+
+
+    [<Property>]
+    let doubleMultiplication (n: uint) (m: uint) (k: uint) (d: uint) =
+        let n, m, k, d = (int n) + 1, (int m) + 1, (int k) + 1, (int d) + 1
+        let mat1 = Utility.getRandomArray2D n m
+        let mat2 = Utility.getRandomArray2D m k
+        let mat3 = Utility.getRandomArray2D k d 
+
+        let expected = 
+            let first = Utility.multiply (*) (+) 0 mat1 mat2
+            Utility.multiply (*) (+) 0 first mat3
+
+        let actual = 
+            let tr1 = QuadTree.ofMatrix mat1
+            let tr2 = QuadTree.ofMatrix mat2 
+            let tr3 = QuadTree.ofMatrix mat3
+
+            let first = QuadTree.multiply (*) (+) 0 tr1 tr2
+            QuadTree.multiply (*) (+) 0 first tr3
 
         let actual = QuadTree.toMatrix actual
 

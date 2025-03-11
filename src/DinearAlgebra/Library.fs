@@ -105,6 +105,10 @@ module Utility =
 
         mat
 
+    let getRandomArray2D n m =
+        let rand = System.Random()
+        let mat = Array2D.map (fun _ -> rand.Next(-1000, 1000)) (Array2D.zeroCreate n m)
+        mat
 
 open Utility
 
