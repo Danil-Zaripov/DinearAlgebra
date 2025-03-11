@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35825.156 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "DinearAlgebra", "src\DinearAlgebra\DinearAlgebra.fsproj", "{56B887C2-A797-816F-236A-96B1C516AE5F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{27BE6367-034D-4F3E-9201-BC6DAD5ECF98}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "AlgebraTests", "tests\AlgebraTests\AlgebraTests.fsproj", "{38F78F13-3947-4937-915A-420EEF76F9FF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{56B887C2-A797-816F-236A-96B1C516AE5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56B887C2-A797-816F-236A-96B1C516AE5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56B887C2-A797-816F-236A-96B1C516AE5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56B887C2-A797-816F-236A-96B1C516AE5F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38F78F13-3947-4937-915A-420EEF76F9FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38F78F13-3947-4937-915A-420EEF76F9FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38F78F13-3947-4937-915A-420EEF76F9FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38F78F13-3947-4937-915A-420EEF76F9FF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{56B887C2-A797-816F-236A-96B1C516AE5F} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{38F78F13-3947-4937-915A-420EEF76F9FF} = {27BE6367-034D-4F3E-9201-BC6DAD5ECF98}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F204147C-DAC5-4C33-BD9B-221B87E2FC52}
+	EndGlobalSection
+EndGlobal
