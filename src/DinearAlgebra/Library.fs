@@ -314,7 +314,9 @@ module QuadTree =
         else
             invalidArg "tr1 tr2" "QuadTrees represented matrices with different sizes"
 
-    let multiply opMult opAdd genericZero tr1 tr2 =
+
+    // intByTmultiplication is a function that multiplies our (opMult x y) with int
+    let multiplyConfigurable intByTmultiplication opMult opAdd genericZero tr1 tr2 =
         let add = map2 opAdd
 
         let rec _mult tr1 tr2 =
@@ -408,9 +410,8 @@ module QuadTree =
             | Node _, Leaf _ -> _mult tr1 (divideLeaf tr2)
             | Leaf _, Node _ -> _mult (divideLeaf tr1) (tr2)
             | Leaf x, Leaf y ->
-                let value =
-                    seq { for _ in 1 .. (getSegmentLength tr1.bounds.col) -> opMult x y }
-                    |> Seq.reduce opAdd
+                let value = intByTmultiplication (getSegmentLength tr1.bounds.col) (opMult x y)
+
 
                 { bounds =
                     { row = tr1.bounds.row
@@ -418,3 +419,12 @@ module QuadTree =
                   tree = Leaf value }
 
         _mult tr1 tr2
+
+
+
+
+    let multiply opMult opAdd genericZero tr1 tr2 =
+        let anyMultiply q x =
+            seq { for _ in 1..q -> x } |> Seq.reduce opAdd
+
+        multiplyConfigurable anyMultiply opMult opAdd genericZero tr1 tr2

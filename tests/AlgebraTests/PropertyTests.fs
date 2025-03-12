@@ -93,6 +93,24 @@ module PropertyTests =
         (n <> 0 && m <> 0) ==> (lazy tst ())
 
     [<Property>]
+    let multiplyConfigurableIsCorrect (mat1: int array2d) =
+        let n, m = Array2D.getDims mat1
+
+        let tst () =
+            let d = (System.Random().Next(1, 200))
+            let mat2 = Utility.getRandomArray2D m d
+            let tr1 = mat1 |> QuadTree.ofMatrix
+            let tr2 = mat2 |> QuadTree.ofMatrix
+
+            let actual = QuadTree.multiplyConfigurable (*) (*) (+) 0 tr1 tr2
+
+            let expected = Utility.multiply (*) (+) 0 mat1 mat2
+
+            actual |> QuadTree.toMatrix .=. expected
+
+        (n <> 0 && m <> 0) ==> (lazy tst ())
+
+    [<Property>]
     let multiplyBigintIsCorrect (mat1: bigint array2d) =
         let n, m = Array2D.getDims mat1
 
@@ -206,7 +224,7 @@ module DoubleMultiplication =
         static member AdjacencyMatrix() =
             let adjacencyMatrixGenerator =
                 gen {
-                    let! n = Gen.choose (2, 5)
+                    let! n = Gen.choose (30, 30)
 
                     let getMatrix n =
                         gen {
@@ -239,6 +257,23 @@ module DoubleMultiplication =
         let actual =
             let first = QuadTree.multiply (&&) (||) false tr tr
             QuadTree.multiply (&&) (||) false first tr
+
+        let actual = QuadTree.toMatrix actual
+
+        expected = actual
+
+    [<Property(Arbitrary = [| typeof<AdjacencyMatrix> |])>]
+    let doubleMultiplicationConfigurableBool (mat: bool array2d) =
+        let tr = QuadTree.ofMatrix mat
+
+        let expected =
+            let first = Utility.multiply (&&) (||) false mat mat
+            Utility.multiply (&&) (||) false first mat
+
+        let actual =
+            let intByBool x y = y
+            let first = QuadTree.multiplyConfigurable intByBool (&&) (||) false tr tr
+            QuadTree.multiplyConfigurable intByBool (&&) (||) false first tr
 
         let actual = QuadTree.toMatrix actual
 
