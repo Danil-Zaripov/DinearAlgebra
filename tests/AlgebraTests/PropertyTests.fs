@@ -200,8 +200,8 @@ module SparseMatrixTests =
         expected = actual
 
 
-module DoubleMultiplication = 
-    
+module DoubleMultiplication =
+
     type AdjacencyMatrix =
         static member AdjacencyMatrix() =
             let adjacencyMatrixGenerator =
@@ -222,7 +222,7 @@ module DoubleMultiplication =
                             return mat
                         }
 
-                    let! mat = getMatrix n 
+                    let! mat = getMatrix n
                     return mat
                 }
 
@@ -232,11 +232,11 @@ module DoubleMultiplication =
     let doubleMultiplicationBool (mat: bool array2d) =
         let tr = QuadTree.ofMatrix mat
 
-        let expected = 
+        let expected =
             let first = Utility.multiply (&&) (||) false mat mat
             Utility.multiply (&&) (||) false first mat
-        
-        let actual = 
+
+        let actual =
             let first = QuadTree.multiply (&&) (||) false tr tr
             QuadTree.multiply (&&) (||) false first tr
 
@@ -250,15 +250,15 @@ module DoubleMultiplication =
         let n, m, k, d = (int n) + 1, (int m) + 1, (int k) + 1, (int d) + 1
         let mat1 = Utility.getRandomArray2D n m
         let mat2 = Utility.getRandomArray2D m k
-        let mat3 = Utility.getRandomArray2D k d 
+        let mat3 = Utility.getRandomArray2D k d
 
-        let expected = 
+        let expected =
             let first = Utility.multiply (*) (+) 0 mat1 mat2
             Utility.multiply (*) (+) 0 first mat3
 
-        let actual = 
+        let actual =
             let tr1 = QuadTree.ofMatrix mat1
-            let tr2 = QuadTree.ofMatrix mat2 
+            let tr2 = QuadTree.ofMatrix mat2
             let tr3 = QuadTree.ofMatrix mat3
 
             let first = QuadTree.multiply (*) (+) 0 tr1 tr2

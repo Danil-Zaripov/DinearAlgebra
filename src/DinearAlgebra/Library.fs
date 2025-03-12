@@ -32,6 +32,7 @@ and QuadTree<'a> = { bounds: Bounds; tree: _QuadTree<'a> }
 module Array2D =
     let getDims mat =
         Array2D.length1 mat, Array2D.length2 mat
+
     let fold f st mat =
         let n, m = getDims mat
         let mutable st = st
@@ -78,9 +79,7 @@ module Utility =
         else if isSubSegm snd fst then snd
         else failwith "Neither is a subsegment"
 
-    let softSubSegm fst snd = 
-        if isSubSegm fst snd then fst
-        else snd
+    let softSubSegm fst snd = if isSubSegm fst snd then fst else snd
 
     let halve (left, right) =
         let length = getSegmentLength (left, right) // end-inclusive
@@ -174,6 +173,21 @@ module QuadTree =
                 tr
         | _ -> failwith "Can't divide a Node"
 
+    let rec trim tr =
+        match tr.tree with
+        | Leaf x -> tr
+        | Node subs ->
+            let subs = SubNodes.map trim subs
+
+            if
+                subs.asSeq
+                |> Seq.filter Option.isSome
+                |> Seq.forall (fun x -> x.Value.tree = subs.NW.Value.tree)
+            then
+                { bounds = tr.bounds
+                  tree = subs.NW.Value.tree }
+            else
+                { bounds = tr.bounds; tree = Node subs }
 
     let ofMatrix mat =
         let rec _f mat xOff yOff =
@@ -279,8 +293,10 @@ module QuadTree =
 
         if lengthsAreEqual then
             let rec _map2 f tr1 tr2 =
-                let softSubBounds () = 
-                    { row = softSubSegm tr1.bounds.row tr2.bounds.row; col = softSubSegm tr1.bounds.col tr2.bounds.col }
+                let softSubBounds () =
+                    { row = softSubSegm tr1.bounds.row tr2.bounds.row
+                      col = softSubSegm tr1.bounds.col tr2.bounds.col }
+
                 let fill tr = { NW = tr; NE = tr; SW = tr; SE = tr }
 
                 match tr1.tree, tr2.tree with
@@ -291,8 +307,8 @@ module QuadTree =
                       tree = Leaf(f x y) }
 
                 | Node(subs1), Node(subs2) -> createNode tr1.bounds (SubNodes.map2 (_map2 f) subs1 subs2)
-                | Node(subs1), _ -> createNode (softSubBounds()) (SubNodes.map2 (_map2 f) subs1 (fill (Some(tr2))))
-                | _, Node(subs2) -> createNode (softSubBounds()) (SubNodes.map2 (_map2 f) (fill (Some(tr1))) subs2)
+                | Node(subs1), _ -> createNode (softSubBounds ()) (SubNodes.map2 (_map2 f) subs1 (fill (Some(tr2))))
+                | _, Node(subs2) -> createNode (softSubBounds ()) (SubNodes.map2 (_map2 f) (fill (Some(tr1))) subs2)
 
             _map2 f tr1 tr2
         else
@@ -317,12 +333,20 @@ module QuadTree =
 
                 if not (Option.isNone NE1 && Option.isNone SW2) then
                     let NW = add (_mult NW1 NW2) (_mult NE1 SW2)
-                    if NW.IsSome then printf ""
+
+                    if NW.IsSome then
+                        printf ""
+
                     let NE = add (_mult NW1 NE2) (_mult NE1 SE2)
-                    if NE.IsSome then printf ""
+
+                    if NE.IsSome then
+                        printf ""
 
                     let SW = add (_mult SW1 NW2) (_mult SE1 SW2)
-                    if SW.IsSome then printf ""
+
+                    if SW.IsSome then
+                        printf ""
+
                     let SE = add (_mult SW1 NE2) (_mult SE1 SE2)
 
                     { NW = NW; NE = NE; SW = SW; SE = SE }

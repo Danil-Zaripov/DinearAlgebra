@@ -97,18 +97,18 @@ module UnitTests =
         Assert.Equal(expected, actual)
 
     [<Fact>]
-    let checkDoubleProduct() =
+    let checkDoubleProduct () =
         let mat = Array2D.init 5 5 (fun x y -> x = y)
-        mat[3,4] <- true
+        mat[3, 4] <- true
 
 
         let tr = QuadTree.ofMatrix mat
 
-        let expected = 
+        let expected =
             let first = Utility.multiply (&&) (||) false mat mat
             Utility.multiply (&&) (||) false first mat
-        
-        let actual = 
+
+        let actual =
             let first = QuadTree.multiply (&&) (||) false tr tr
             QuadTree.multiply (&&) (||) false first tr
 
@@ -116,3 +116,16 @@ module UnitTests =
 
         Assert.Equal(expected, actual)
 
+    [<Fact>]
+    let checkTrim () =
+        let mat = Array2D.create 3 3 true
+        mat[0, 2] <- false
+
+        let actual =
+            mat |> QuadTree.ofMatrix |> QuadTree.map (fun _ -> true) |> QuadTree.trim
+
+        let expected =
+            { bounds = { row = (0, 2); col = (0, 2) }
+              tree = Leaf true }
+
+        actual = expected
