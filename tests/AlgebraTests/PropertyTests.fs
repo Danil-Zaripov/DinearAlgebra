@@ -55,8 +55,17 @@ module PropertyTests =
         | None -> true
 
 
+    [<Property>]
+    let transposeIsCorrect (mat: int array2d) =
+        let n,m = Array2D.getDims mat
 
+        let tst () = 
+            let tr = QuadTree.ofMatrix mat
+            let actual = tr |> QuadTree.transpose |> QuadTree.toMatrix
+            let expected = mat |> Array2D.transpose
+            actual = expected
 
+        (n <> 0 && m <> 0) ==> (lazy tst ())
     [<Property>]
     let map2SumIsCorrect (mat1: int array2d) =
         let n, m = Array2D.getDims mat1

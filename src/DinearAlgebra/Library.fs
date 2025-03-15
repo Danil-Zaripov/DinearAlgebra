@@ -56,6 +56,9 @@ module Array2D =
 
         st
 
+    let transpose mat =
+        let n,m = getDims mat
+        Array2D.init m n (fun x y -> mat[y,x])
 
 
 module Utility =
@@ -314,6 +317,19 @@ module QuadTree =
         else
             invalidArg "tr1 tr2" "QuadTrees represented matrices with different sizes"
 
+
+    let rec transpose tr = 
+        match tr.tree with
+            | Leaf _ -> { tr with bounds = { row = tr.bounds.col; col = tr.bounds.row} }
+            | Node { NW = NW; NE = NE; SW = SW; SE = SE } ->
+                let subs = 
+                    {
+                        NW = Option.map transpose NW
+                        NE = Option.map transpose SW // !
+                        SW = Option.map transpose NE // !
+                        SE = Option.map transpose SE
+                    }
+                { bounds = { row = tr.bounds.col; col = tr.bounds.row}; tree = Node subs}
 
     // intByTmultiplication is a function that multiplies our (opMult x y) with int
     let multiplyConfigurable intByTmultiplication opMult opAdd genericZero tr1 tr2 =
