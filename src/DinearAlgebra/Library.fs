@@ -57,8 +57,8 @@ module Array2D =
         st
 
     let transpose mat =
-        let n,m = getDims mat
-        Array2D.init m n (fun x y -> mat[y,x])
+        let n, m = getDims mat
+        Array2D.init m n (fun x y -> mat[y, x])
 
 
 module Utility =
@@ -318,18 +318,24 @@ module QuadTree =
             invalidArg "tr1 tr2" "QuadTrees represented matrices with different sizes"
 
 
-    let rec transpose tr = 
+    let rec transpose tr =
         match tr.tree with
-            | Leaf _ -> { tr with bounds = { row = tr.bounds.col; col = tr.bounds.row} }
-            | Node { NW = NW; NE = NE; SW = SW; SE = SE } ->
-                let subs = 
-                    {
-                        NW = Option.map transpose NW
-                        NE = Option.map transpose SW // !
-                        SW = Option.map transpose NE // !
-                        SE = Option.map transpose SE
-                    }
-                { bounds = { row = tr.bounds.col; col = tr.bounds.row}; tree = Node subs}
+        | Leaf _ ->
+            { tr with
+                bounds =
+                    { row = tr.bounds.col
+                      col = tr.bounds.row } }
+        | Node { NW = NW; NE = NE; SW = SW; SE = SE } ->
+            let subs =
+                { NW = Option.map transpose NW
+                  NE = Option.map transpose SW // !
+                  SW = Option.map transpose NE // !
+                  SE = Option.map transpose SE }
+
+            { bounds =
+                { row = tr.bounds.col
+                  col = tr.bounds.row }
+              tree = Node subs }
 
     // intByTmultiplication is a function that multiplies our (opMult x y) with int
     let multiplyConfigurable intByTmultiplication opMult opAdd genericZero tr1 tr2 =
@@ -444,3 +450,14 @@ module QuadTree =
             seq { for _ in 1..q -> x } |> Seq.reduce opAdd
 
         multiplyConfigurable anyMultiply opMult opAdd genericZero tr1 tr2
+
+    // Matrix x Vector(as column)
+    let multiplyByVectorConfigurable conf opMult opAdd genericZero tr (v: 'a array) =
+        let v = Array2D.init v.Length 1 (fun i _ -> v.[i])
+
+        multiplyConfigurable conf opMult opAdd genericZero tr (ofMatrix v)
+
+    let multiplyByVector opMult opAdd genericZero tr (v: 'a array) =
+        let v = Array2D.init v.Length 1 (fun i _ -> v.[i])
+
+        multiply opMult opAdd genericZero tr (ofMatrix v)

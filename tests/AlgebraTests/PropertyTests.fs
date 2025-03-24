@@ -57,15 +57,16 @@ module PropertyTests =
 
     [<Property>]
     let transposeIsCorrect (mat: int array2d) =
-        let n,m = Array2D.getDims mat
+        let n, m = Array2D.getDims mat
 
-        let tst () = 
+        let tst () =
             let tr = QuadTree.ofMatrix mat
             let actual = tr |> QuadTree.transpose |> QuadTree.toMatrix
             let expected = mat |> Array2D.transpose
             actual = expected
 
         (n <> 0 && m <> 0) ==> (lazy tst ())
+
     [<Property>]
     let map2SumIsCorrect (mat1: int array2d) =
         let n, m = Array2D.getDims mat1
@@ -136,6 +137,25 @@ module PropertyTests =
             actual |> QuadTree.toMatrix .=. expected
 
         (n <> 0 && m <> 0) ==> (lazy tst ())
+
+    [<Property>]
+    let multiplyByVectorIsCorrect (v: int array) =
+        let len = v.Length
+
+        let tst () =
+            let d = (System.Random().Next(1, 200))
+            let mat = Utility.getRandomArray2D d len
+            let tr1 = mat |> QuadTree.ofMatrix
+
+            let tr2 =
+                let v = Array2D.init v.Length 1 (fun i _ -> v.[i])
+                v |> QuadTree.ofMatrix
+
+            let actual = QuadTree.multiplyByVector (*) (+) 0 tr1 v
+            let expected = QuadTree.multiply (*) (+) 0 tr1 tr2
+            actual = expected
+
+        len <> 0 ==> (lazy tst ())
 
 module SparseMatrixTests =
 
