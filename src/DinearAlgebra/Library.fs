@@ -439,13 +439,16 @@ module QuadTree =
 
         multiplyConfigurable anyMultiply opMult opAdd genericZero tr1 tr2
 
-    // Matrix x Vector(as column)
+    // Matrix x Vector(as column) -> Vector
     let multiplyByVectorConfigurable conf opMult opAdd genericZero tr (v: 'a array) =
         let v = Array2D.init v.Length 1 (fun i _ -> v.[i])
 
-        multiplyConfigurable conf opMult opAdd genericZero tr (ofMatrix v)
+        let mat = multiplyConfigurable conf opMult opAdd genericZero tr (ofMatrix v) |> toMatrix
+        Array.init (Array2D.length1 mat) (fun i -> mat[i,0])
+        
 
     let multiplyByVector opMult opAdd genericZero tr (v: 'a array) =
         let v = Array2D.init v.Length 1 (fun i _ -> v.[i])
 
-        multiply opMult opAdd genericZero tr (ofMatrix v)
+        let mat = multiply opMult opAdd genericZero tr (ofMatrix v) |> toMatrix
+        Array.init (Array2D.length1 mat) (fun i -> mat[i,0])

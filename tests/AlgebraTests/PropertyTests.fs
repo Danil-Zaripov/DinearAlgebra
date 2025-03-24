@@ -148,11 +148,15 @@ module PropertyTests =
             let tr1 = mat |> QuadTree.ofMatrix
 
             let tr2 =
-                let v = Array2D.init v.Length 1 (fun i _ -> v.[i])
-                v |> QuadTree.ofMatrix
+                Array2D.init v.Length 1 (fun i _ -> v.[i]) |> QuadTree.ofMatrix
+                
 
-            let actual = QuadTree.multiplyByVector (*) (+) 0 tr1 v
-            let expected = QuadTree.multiply (*) (+) 0 tr1 tr2
+            let actual = 
+                QuadTree.multiplyByVector (*) (+) 0 tr1 v
+            let expected = 
+                let v = QuadTree.multiply (*) (+) 0 tr1 tr2 |> QuadTree.toMatrix
+                Array.init d (fun i -> v[i,0])
+
             actual = expected
 
         len <> 0 ==> (lazy tst ())
