@@ -357,20 +357,8 @@ module QuadTree =
 
                 if not (Option.isNone NE1 && Option.isNone SW2) then
                     let NW = add (_mult NW1 NW2) (_mult NE1 SW2)
-
-                    if NW.IsSome then
-                        printf ""
-
                     let NE = add (_mult NW1 NE2) (_mult NE1 SE2)
-
-                    if NE.IsSome then
-                        printf ""
-
                     let SW = add (_mult SW1 NW2) (_mult SE1 SW2)
-
-                    if SW.IsSome then
-                        printf ""
-
                     let SE = add (_mult SW1 NE2) (_mult SE1 SE2)
 
                     { NW = NW; NE = NE; SW = SW; SE = SE }

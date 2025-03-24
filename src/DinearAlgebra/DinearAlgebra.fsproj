@@ -4,7 +4,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<RepositoryUrl>https://github.com/Danil-Zaripov/DinearAlgebra</RepositoryUrl>
-	<VersionPrefix>0.0.6</VersionPrefix>
+	<VersionPrefix>0.0.7</VersionPrefix>
 	<VersionSuffix>alpha</VersionSuffix> 
   </PropertyGroup>
 
